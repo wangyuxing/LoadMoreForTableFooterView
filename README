@@ -1,0 +1,62 @@
+LoadMoreForTableFooterView
+
+说明：
+
+使用在TableView中，当需要“点击显示更多”或者“上拉显示更多”功能时，将LoadMoreForTableFooterView作为你的tableview的tableFooterView即可。
+
+使用如下：
+
+if (_loadMoreFooterView == nil) {
+                LoadMoreTableFooterView *view = [[LoadMoreTableFooterView alloc] initWithFrame:CGRectMake(0.0f, 0, _myTable.frame.size.width, 40)];
+                view.delegate = self;
+                _myTable.tableFooterView = view;
+                self.loadMoreFooterView = view;
+                [view release];
+                
+            }
+
+
+//此方法是开始读取数据
+- (void)reloadTableViewDataSource{
+	//should be calling your tableviews data source model to reload
+	_reloading = YES;
+	NSLog(@"star");
+        // 开始获取下一页数据
+    
+}
+//此方法是结束读取数据
+- (void)doneLoadingTableViewData{
+	//  model should call this when its done loading
+	_reloading = NO;
+    [_loadMoreFooterView loadMoreScrollViewDataSourceDidFinishedLoading:self.myTable];
+	NSLog(@"end");
+	
+}
+
+// 监听tableview的滑动事件，隐藏键盘
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    if (_reloading) return;
+    [_loadMoreFooterView loadMoreScrollViewDidScroll:scrollView];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+    if (!_reloading) {
+        [_loadMoreFooterView loadMoreScrollViewDidEndDragging:scrollView];
+    }    
+}
+
+
+
+#pragma mark -
+#pragma mark LoadMoreTableFooterDelegate Methods
+
+- (void)loadMoreTableFooterDidTriggerRefresh:(LoadMoreTableFooterView *)view {
+    
+	[self reloadTableViewDataSource];
+	//[self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:3.0];
+    
+}
+
+- (BOOL)loadMoreTableFooterDataSourceIsLoading:(LoadMoreTableFooterView *)view {
+	return _reloading;
+}
