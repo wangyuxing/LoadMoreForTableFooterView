@@ -1,0 +1,30 @@
+function currentDevice () {
+    var ua = navigator.userAgent;
+
+    var returnedHash = {
+        "iOS" : (ua.match(/MobileSafari/i) != null),
+        "iPod": (ua.match(/iPod/i) != null),
+        "iPad": (ua.match(/iPad/i) != null),
+        "iPhone": (ua.match(/iPhone/i) != null)
+    };
+
+    if (returnedHash['iPad'] || returnedHash['iPod']) {
+        returnedHash['iPhone'] = false;
+    }
+
+    returnedHash['canMakePhoneCalls'] = returnedHash['iPhone'];
+    returnedHash['canHandleMapLinks'] = returnedHash['iOS'];
+
+    return returnedHash;
+}
+
+var is_device = currentDevice();
+
+if (is_device.iPhone) {
+    document.location = 'xywyask://test';
+    setTimeout(function() {
+        //if (confirm('是否要安装「问医生」iPhone App？')) {
+            document.location = 'itms:://itunes.apple.com/cn/app/wen-yi-sheng/id551521341?mt=8';
+        //}
+    }, 100);
+}
